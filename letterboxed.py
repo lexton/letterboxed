@@ -15,10 +15,13 @@ class LetterboxedSolver:
 
     This will generate solutions to the NYT letterboxed game.
 
-    http://nytimes.com/puzzles/letter-boxed
-
     """    
-    def __init__(self, edges: List[str], wordlist_file=None, min_length = 3):
+    def __init__(
+            self,
+            edges: List[str],
+            wordlist_file=None,
+            min_length = 3
+        ):
 
         # initialize validators first
         self.forbidden_substrings: set[str] = set()
@@ -75,34 +78,39 @@ class LetterboxedSolver:
         if not self.is_valid_word(word):
             return
 
+        # create multiple indexes on insertion
         self.prefix[word[0]].add(word)
         self.count[len(set(word))].add(word)
 
     def first_word_choice(self):
-        # start with the words with the most unique characters
+        # start with the words with the most unique characters and then alphabetically
         for _, v in sorted(self.count.items(), reverse=True):
             for w in sorted(v):
                 yield w
     
     def next_word(self, first_char:str, left:set):
-        candidates = defaultdict(set)
+        # cache the results we aren't going to immediately use
+        candidates = set()
         for w in self.prefix[first_char]:
             r = len(left - set(w))
             
+            # NOTE: there may be situations where a joining word would make no progress
+            # but would allow the next stage to be reached by pivoting on a different char prefix
+            # catching this case would add substantial complexity
+
             # no progress, skip
             if r == len(left):
                 continue
 
-            # we have a solution immediately
+            # immediate solution, give that first
             if r == 0:
                 yield w
                 continue
 
-            candidates[r].add(w)
+            candidates.add(w)
 
-        for s in candidates.values():
-            for w in s:
-                yield w
+        for s in candidates:
+            yield s
 
     def __iter__(self):
         """ convenience function to allow us to treat the class as a generator """
@@ -139,8 +147,8 @@ class LetterboxedSolver:
 @click.argument('words', nargs=-1)
 @click.option(
     '--wordlist',
-    type=click.Choice(["google-10k", "test", "unix", "wordle"], case_sensitive=False),
-    default="wordle",
+    type=click.Choice(["google-10k", "test", "unix", "scrabble", "wordle"], case_sensitive=False),
+    default="unix",
     help="Wordlist that should be used",
 )
 @click.option('--max-results', default=-1, help='Limit the number of rendered results')

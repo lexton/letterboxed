@@ -14,10 +14,16 @@ Letting you pick which wordlist is allowed.
 ### Unix
 * Sourced from `/usr/share/dict/words`
 * Proper nouns are capitalized at least, so are automatically removed since we work entirely in lower case
+* Doesn't contain all english words: e.g. humiliated
 
 ## Wordle
-* Sources
+* Source: https://github.com/tabatkins/wordle-list
+* Notes: Manually sorted
 
 ## Test
 * Sourced from: my brain
 * Used for test cases, not an actually useful wordlist
+
+## Scrabble
+* Official wordlist
+* https://boardgames.stackexchange.com/questions/38366/latest-collins-scrabble-words-list-in-text-file
