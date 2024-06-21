@@ -9,19 +9,14 @@ import click
 from nyt import nyt_lb_game_data_today
 
 
-
 class LetterboxedSolver:
-    """ LetterboxSolver
+    """LetterboxSolver
 
     This will generate solutions to the NYT letterboxed game.
 
-    """    
-    def __init__(
-            self,
-            edges: List[str],
-            wordlist_file=None,
-            min_length = 3
-        ):
+    """
+
+    def __init__(self, edges: List[str], wordlist_file=None, min_length=3):
 
         # initialize validators first
         self.forbidden_substrings: set[str] = set()
@@ -32,7 +27,7 @@ class LetterboxedSolver:
         for w in edges:
             # note: itertools.permutations doesn't include repeating values
             for p in product(w, repeat=2):
-                self.forbidden_substrings.add(''.join(p))
+                self.forbidden_substrings.add("".join(p))
 
         # load dictionary data
 
@@ -73,7 +68,6 @@ class LetterboxedSolver:
             for l in f.readlines():
                 self.insert(l.strip())
 
-
     def insert(self, word) -> None:
         if not self.is_valid_word(word):
             return
@@ -87,13 +81,13 @@ class LetterboxedSolver:
         for _, v in sorted(self.count.items(), reverse=True):
             for w in sorted(v):
                 yield w
-    
-    def next_word(self, first_char:str, left:set):
+
+    def next_word(self, first_char: str, left: set):
         # cache the results we aren't going to immediately use
         candidates = set()
         for w in self.prefix[first_char]:
             r = len(left - set(w))
-            
+
             # NOTE: there may be situations where a joining word would make no progress
             # but would allow the next stage to be reached by pivoting on a different char prefix
             # catching this case would add substantial complexity
@@ -113,7 +107,7 @@ class LetterboxedSolver:
             yield s
 
     def __iter__(self):
-        """ convenience function to allow us to treat the class as a generator """
+        """convenience function to allow us to treat the class as a generator"""
         return self.gen_solutions()
 
     def gen_solutions(self):
@@ -121,7 +115,7 @@ class LetterboxedSolver:
         queue = deque([])
         for w in self.first_word_choice():
             left = self.allowed_chars - set(w)
-            
+
             # NOTE: its rare, but we may find a single word that solves the game
             if len(left) == 0:
                 yield w
@@ -134,27 +128,30 @@ class LetterboxedSolver:
             for n in self.next_word(words[-1][-1], left):
                 char_diff = left - set(n)
                 word_chain = words + [n]
-                
+
                 # we have found a finished chain
                 if len(char_diff) == 0:
                     yield word_chain
-                
+
                 # we need to go to next depth, but wrap up this depth first
                 else:
                     queue.append((word_chain, char_diff))
 
+
 @click.command(help="A generic letterbox solver")
-@click.argument('words', nargs=-1)
+@click.argument("words", nargs=-1)
 @click.option(
-    '--wordlist',
-    type=click.Choice(["google-10k", "test", "unix", "scrabble", "wordle"], case_sensitive=False),
+    "--wordlist",
+    type=click.Choice(
+        ["google-10k", "test", "unix", "scrabble", "wordle"], case_sensitive=False
+    ),
     default="unix",
     help="Wordlist that should be used",
 )
-@click.option('--max-results', default=-1, help='Limit the number of rendered results')
-@click.option('--max-word-chain', default=3, help='Limit the length of the word chains')
-@click.option('--debug', is_flag=True, help='Enable debug logging')
-def main(words:List[str], wordlist, max_results, max_word_chain, debug):
+@click.option("--max-results", default=-1, help="Limit the number of rendered results")
+@click.option("--max-word-chain", default=3, help="Limit the length of the word chains")
+@click.option("--debug", is_flag=True, help="Enable debug logging")
+def main(words: List[str], wordlist, max_results, max_word_chain, debug):
     results: Set[str] = set()
     result_count = 0
     chain_depth = 1
@@ -163,7 +160,7 @@ def main(words:List[str], wordlist, max_results, max_word_chain, debug):
         print("Fetching Letter-Boxed from NYT")
         metadata = nyt_lb_game_data_today()
         words = "-".join(metadata["sides"]).lower().split("-")
-        solution = "-".join(metadata['ourSolution']).lower()
+        solution = "-".join(metadata["ourSolution"]).lower()
 
         print(f"Loaded ID: {metadata['id']} | Date: {metadata['date']}")
         print(f"Edges: {metadata['sides']} | Official Solution: {solution}")
@@ -176,11 +173,15 @@ def main(words:List[str], wordlist, max_results, max_word_chain, debug):
     )
 
     if debug:
-        print(f"Result Filters: max_word_chain: {max_word_chain} max_results: {max_results}")
+        print(
+            f"Result Filters: max_word_chain: {max_word_chain} max_results: {max_results}"
+        )
         print(f"Allowed Chars: {solver.allowed_chars}")
         print(f"Forbidden Substrings: {solver.forbidden_substrings}")
 
-    print(f"Wordlist: {wordlist} | Candidate Words: {sum(len(v) for v in solver.prefix.values())}")
+    print(
+        f"Wordlist: {wordlist} | Candidate Words: {sum(len(v) for v in solver.prefix.values())}"
+    )
 
     for result in solver:
         # filter the result collection
@@ -207,10 +208,11 @@ def main(words:List[str], wordlist, max_results, max_word_chain, debug):
     if result_count == 0:
         print("No valid letter boxed solutions found")
         sys.exit(1)
-    
+
     print(f"{chain_depth} words combinations: {len(results)} results")
     for w in sorted(results):
         print(f"  {w}")
+
 
 if __name__ == "__main__":
     main()
