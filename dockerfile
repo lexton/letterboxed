@@ -10,4 +10,4 @@ RUN pip install --no-cache-dir --upgrade pip && \
 COPY words words
 COPY *.py .
 
-ENTRYPOINT ["./main.py"]
+ENTRYPOINT ["python", "-u", "./main.py"]
