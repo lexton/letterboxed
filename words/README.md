@@ -20,10 +20,6 @@ Letting you pick which wordlist is allowed.
 * Source: https://github.com/tabatkins/wordle-list
 * Notes: Manually sorted
 
-## Test
-* Sourced from: my brain
-* Used for test cases, not an actually useful wordlist
-
 ## Scrabble
 * Official wordlist
 * https://boardgames.stackexchange.com/questions/38366/latest-collins-scrabble-words-list-in-text-file
