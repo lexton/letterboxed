@@ -19,7 +19,7 @@ from letterboxed import LetterboxedSolver
     default="scrabble",
     help="Wordlist that should be used to generate solutions",
 )
-@click.option("--max-results", default=-1, help="Limit the number of rendered results")
+@click.option("--max-results", default=1000, help="Limit the number of rendered results, set to -1 to get all results")
 @click.option("--max-word-chain", default=3, help="Limit the length of the word chains")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
 def main(words: List[str], wordlist, max_results, max_word_chain, debug):

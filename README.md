@@ -1,4 +1,4 @@
-# Solver for the NYT Letter Boxed game
+# CLI Solver for the NYT Letter Boxed game
 
 ## Intro:
 
@@ -33,3 +33,18 @@ This solver should solve flexibly sized letterboxes
 * Total length of word is unimportant, the length of the unique letter set for each word is important
 * Store each word alongside the remaining characters for the overall solution makes this easy to look up
 * Index each word based on the first character (since we will heavily use this for finding next words)
+
+
+## Usage
+
+`docker run lukeex/letterboxed:latest`
+
+or if you want to run it locally from source
+
+
+
+``` bash
+$ python3 -m venv venv
+$ pip3 install -r requirements.txt
+$ ./main.py # --help will give you the CLI options including word list and max number of words to generate etc
+```
