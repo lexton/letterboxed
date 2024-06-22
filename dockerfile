@@ -10,4 +10,4 @@ RUN pip install --no-cache-dir --upgrade pip && \
 COPY words words
 COPY *.py .
 
-ENTRYPOINT ["./letterboxed.py"]
+ENTRYPOINT ["./main.py"]
